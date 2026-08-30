@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+
+# wp-now keeps its WordPress install and database in ~/.wp-now, not here,
+# but guard against a stray local install ending up in the repo.
+wp-content/
+wordpress/

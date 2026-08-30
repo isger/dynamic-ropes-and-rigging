@@ -1,0 +1,686 @@
+/*
+Theme Name: Dynamic Ropes & Rigging
+Theme URI: https://dynamicropesandrigging.co.uk/
+Author: Dynamic Ropes and Rigging Ltd
+Description: Block theme for Dynamic Ropes & Rigging Ltd. Specialist stunt rigging for film and television. Dark, cinematic, single-page.
+Requires at least: 6.5
+Tested up to: 6.8
+Requires PHP: 8.0
+Version: 1.4.0
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: dynamic-rigging
+Tags: one-column, block-patterns, full-site-editing, custom-colors, custom-menu
+*/
+
+/* Nearly all visual decisions live in theme.json. This file covers only what
+   theme.json cannot express: the hero treatment, the sticky header, the
+   contact form controls and accessibility affordances. */
+
+/* ---------------------------------------------------------------- Base --- */
+
+html {
+	scroll-behavior: smooth;
+	/* stop the sticky header covering anchor targets */
+	scroll-padding-top: 5.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+body { overflow-x: hidden; }
+
+img { max-width: 100%; height: auto; }
+
+/* Visible keyboard focus everywhere: the old site had none. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+	outline: 3px solid var(--wp--preset--color--accent-bright);
+	outline-offset: 3px;
+}
+
+.drr-skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: 100000;
+	padding: 0.75rem 1.25rem;
+	background: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--base);
+	font-weight: 700;
+}
+.drr-skip-link:focus {
+	left: 0.5rem;
+	top: 0.5rem;
+}
+
+/* -------------------------------------------------------------- Header --- */
+
+/* The header and footer align to the same column as the page sections.
+   They read WordPress's own layout variables rather than repeating the values,
+   so they cannot drift from theme.json.
+
+   The padding has to sit on the outer element with the max-width on the inner
+   one. Putting both on a single box, which is what these did before, insets the
+   contents by the padding again and left the navbar 48px narrower than the
+   content at 1440px. The gap widens above that. */
+.drr-header,
+.drr-footer {
+	padding-inline: var(--wp--style--root--padding-left, clamp(1.25rem, 5vw, 3rem));
+}
+
+.drr-header__inner,
+.drr-footer__inner {
+	max-width: var(--wp--style--global--wide-size, 1240px);
+	margin-inline: auto;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.drr-header__inner {
+	gap: 1.5rem;
+	padding-block: 0.85rem;
+}
+
+.drr-footer__inner {
+	gap: 1.25rem;
+	padding-block: 2.5rem;
+}
+
+.drr-header {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+	background: rgba(15, 14, 13, 0.92);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border-bottom: 1px solid var(--wp--preset--color--surface-raised);
+}
+
+.drr-header__logo img {
+	display: block;
+	width: 100%;
+	max-width: 213px; /* half the 426px source, so it stays crisp on retina */
+	height: auto;
+}
+
+.drr-nav a {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.0625rem;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--contrast);
+	text-decoration: none;
+	padding-bottom: 2px;
+	border-bottom: 2px solid transparent;
+}
+.drr-nav a:hover,
+.drr-nav a:focus-visible {
+	color: var(--wp--preset--color--accent-bright);
+	border-bottom-color: var(--wp--preset--color--accent-bright);
+	text-decoration: none;
+}
+
+/* Phone number in the header: the single most important link on the site. */
+.drr-tel {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--wp--preset--color--contrast) !important;
+	white-space: nowrap;
+	text-decoration: none !important;
+}
+.drr-tel:hover { color: var(--wp--preset--color--accent-bright) !important; }
+.drr-tel svg { flex: none; }
+
+.drr-header__contact {
+	display: inline-flex;
+	align-items: center;
+	gap: 1.5rem;
+}
+
+@media (max-width: 1023px) {
+	/* The phone is the stronger call to action on a small screen and the email
+	   would crowd it, so it drops out of the header and stays in the contact
+	   section and footer. */
+	.drr-header__email { display: none; }
+}
+
+@media (max-width: 781px) {
+	.drr-nav { display: none; } /* anchor nav collapses; the phone CTA stays */
+	.drr-header__logo img { max-width: 150px; }
+	.drr-tel { font-size: 1.0625rem; }
+}
+
+/* ---------------------------------------------------------------- Hero --- */
+
+/* The hero is a flex column so its content sits against the bottom edge, but
+   its single flex item is .drr-hero__inner. Putting the content blocks
+   directly in a flex container breaks them: WordPress's constrained layout
+   gives each child `margin-inline: auto`. Auto margins on a flex item
+   shrink-wrap and centre it instead of leaving it left-aligned. */
+.drr-hero {
+	position: relative;
+	isolation: isolate;
+	min-height: min(68vh, 540px);
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	overflow: hidden;
+}
+
+.drr-hero__inner {
+	width: 100%;
+}
+
+.drr-hero::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -2;
+	/* Fallback first, then the prefixed and standard forms, so each browser
+	   settles on the last one it understands. */
+	background-image: url("assets/img/hero-stunt-1280.jpg");
+	background-image: -webkit-image-set(
+		url("assets/img/hero-stunt-1280.jpg") 1x,
+		url("assets/img/hero-stunt.jpg") 2x
+	);
+	background-image: image-set(
+		url("assets/img/hero-stunt-1280.jpg") 1x,
+		url("assets/img/hero-stunt.jpg") 2x
+	);
+	background-size: cover;
+	background-position: center 45%;
+}
+
+.drr-hero::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background:
+		linear-gradient(180deg, rgba(15,14,13,0.55) 0%, rgba(15,14,13,0.15) 35%, rgba(15,14,13,0.92) 100%),
+		radial-gradient(ellipse at 50% 40%, rgba(15,14,13,0) 30%, rgba(15,14,13,0.6) 100%);
+}
+
+/* The eyebrow and body copy sit over the brightest part of the photograph
+   (cloud), so they need their own shadow rather than relying on the gradient. */
+.drr-hero .drr-eyebrow,
+.drr-hero .drr-measure {
+	text-shadow: 0 1px 12px rgba(0, 0, 0, 0.8);
+}
+
+.drr-hero__tagline {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 700;
+	text-transform: uppercase;
+	line-height: 1;
+	text-wrap: balance;
+	text-shadow: 0 2px 24px rgba(0, 0, 0, 0.65);
+}
+
+.drr-hero__rule {
+	width: 72px;
+	height: 4px;
+	background: var(--wp--preset--color--accent);
+	border: 0;
+	margin-block: 1.25rem;
+}
+
+.drr-measure {
+	max-width: 52ch;
+}
+
+/* Left-align blocks that are narrower than the section's content column.
+   Core's constrained layout gives every child `margin-left: auto !important`,
+   which centres anything narrower than the column. Setting the start margin to
+   0 is not the fix: that measures from the section's padding box, so the block
+   lands further left than the headings above it. The gap widens with the
+   viewport (52px out at 1440, 292px at 1920).
+   This reproduces the exact offset the auto margin gives the full-width column,
+   so narrow blocks line up with the headings. Sections all use a 1240px
+   contentSize, which matches theme.json's wideSize. */
+.drr-measure,
+.drr-hero__rule,
+.drr-showreel {
+	margin-inline-start: max(0px, (100% - var(--wp--style--global--wide-size)) / 2) !important;
+	margin-inline-end: auto !important;
+}
+
+/* ------------------------------------------------------------ Sections --- */
+
+.drr-eyebrow {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--accent);
+	margin: 0;
+}
+
+/* Sections carry their own padding, so the flow gap between them is doubled
+   space. Removing it takes 28px off every seam.
+   `.wp-site-blocks` is the same rule one level up: without it, main picks up a
+   28px margin above and below, showing as a band of bare body background
+   between the header, the page and the footer. */
+.wp-site-blocks > * + *,
+#main > * + * {
+	margin-block-start: 0;
+}
+
+/* The last row's bottom margin sits directly on top of the section's own
+   padding-bottom, so it is redundant. */
+.drr-service:last-child {
+	margin-bottom: 0 !important;
+}
+
+/* Alternating service rows. The columns block handles the stacking; this only
+   flips the visual order on wide screens so the images zig-zag. */
+@media (min-width: 782px) {
+	.drr-service--reverse .wp-block-column:first-child { order: 2; }
+	.drr-service--reverse .wp-block-column:last-child { order: 1; }
+}
+
+.drr-service figure,
+.drr-service .wp-block-image {
+	margin: 0;
+}
+.drr-service img {
+	width: 100%;
+	object-fit: cover;
+	aspect-ratio: 16 / 9;
+}
+
+.drr-panel {
+	background: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--surface-raised);
+	border-radius: 4px;
+}
+
+/* ------------------------------------------------------------- Credits --- */
+
+/* Credits are set as type rather than poster artwork, laid out like end-title
+   cards: title in condensed caps, year and role quiet underneath. */
+.drr-credits {
+	list-style: none;
+	margin: var(--wp--preset--spacing--40) 0 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	column-gap: var(--wp--preset--spacing--30);
+	border-top: 1px solid var(--wp--preset--color--surface-raised);
+}
+
+.drr-credits__item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	padding: 0.8rem 0;
+	border-bottom: 1px solid var(--wp--preset--color--surface-raised);
+}
+
+.drr-credits__title {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.1875rem;
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+	text-wrap: balance;
+}
+
+.drr-credits__meta {
+	font-size: 0.8125rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--muted);
+}
+
+/* ---------------------------------------------------------- Contact form -- */
+
+.drr-form {
+	display: grid;
+	gap: 1.1rem;
+}
+
+.drr-form label {
+	display: block;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--muted);
+	margin-bottom: 0.4rem;
+}
+
+.drr-form input[type="text"],
+.drr-form input[type="email"],
+.drr-form input[type="tel"],
+.drr-form textarea {
+	width: 100%;
+	padding: 0.8rem 0.9rem;
+	background: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--surface-raised);
+	border-radius: 3px;
+	color: var(--wp--preset--color--contrast);
+	font-family: inherit;
+	font-size: 1rem;
+	line-height: 1.5;
+}
+.drr-form textarea { min-height: 9rem; resize: vertical; }
+
+.drr-form input:focus,
+.drr-form textarea:focus {
+	border-color: var(--wp--preset--color--accent);
+	outline: 2px solid var(--wp--preset--color--accent-bright);
+	outline-offset: 1px;
+}
+
+/* Honeypot: kept out of view for people and assistive tech alike. */
+.drr-form__hp {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* Phone and email given equal weight above the form, for anyone who would
+   rather not fill one in. */
+.drr-contact__direct {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.9rem;
+	margin-top: 1.75rem;
+}
+
+.drr-contact__link {
+	font-size: 1.375rem;
+	word-break: break-word;
+}
+
+.drr-contact__detail {
+	font-style: normal;
+	line-height: 1.8;
+}
+
+.drr-footer__contact {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem 1.5rem;
+}
+
+/* -------------------------------------------------------------- Footer --- */
+
+.drr-footer {
+	border-top: 1px solid var(--wp--preset--color--surface-raised);
+}
+.drr-footer,
+.drr-footer p {
+	font-size: 0.9375rem;
+	color: var(--wp--preset--color--muted);
+}
+
+.drr-social {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.9rem;
+}
+.drr-social a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 42px;
+	height: 42px;
+	border: 1px solid var(--wp--preset--color--surface-raised);
+	border-radius: 50%;
+	color: var(--wp--preset--color--contrast);
+	transition: border-color 0.15s ease, color 0.15s ease;
+}
+.drr-social a:hover,
+.drr-social a:focus-visible {
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent-bright);
+	text-decoration: none;
+}
+
+/* IMDb reads as a wordmark rather than a glyph, so it gets a pill instead of
+   being squeezed into a circle. */
+.drr-social__pill {
+	width: auto !important;
+	padding: 0 0.9rem;
+	border-radius: 21px !important;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.9375rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------- Media --- */
+
+/* Two supporting shots under the intro copy: a wide crew photo and a taller
+   location shot beside it. They stack on small screens. */
+.drr-intro__media {
+	display: grid;
+	/* auto-fit rather than a single column: between phone width and the 782px
+	   breakpoint the container is already full width. One column made the
+	   portrait shots render over 900px tall. */
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: var(--wp--preset--spacing--20);
+}
+.drr-intro__media figure { margin: 0; }
+.drr-intro__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 3px;
+	display: block;
+}
+@media (min-width: 782px) {
+	/* Both shots are landscape now, so they share the row equally. */
+	.drr-intro__media { grid-template-columns: 1fr 1fr; }
+	.drr-intro__media img { aspect-ratio: 3 / 2; }
+}
+
+.drr-hire__media {
+	display: grid;
+	/* auto-fit rather than a fixed count: two 167px columns on a phone left an
+	   orphaned cell. A single column made the portrait shot 900px tall on a
+	   tablet. This settles on one column narrow, more as room allows. */
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1rem;
+	align-items: start;
+}
+
+/* The camera shot is portrait and the two rig shots are landscape, so the tall
+   one spans both rows on the left and the pair stack beside it. Their combined
+   height lands close to the portrait's, which keeps the block square-ish. */
+@media (min-width: 782px) {
+	.drr-hire__media { grid-template-columns: 1fr 1fr; }
+	.drr-hire__media figure:first-child { grid-row: span 2; }
+}
+.drr-hire__media figure { margin: 0; }
+.drr-hire__media img {
+	width: 100%;
+	height: auto;
+	border-radius: 3px;
+	display: block;
+}
+
+.drr-credits__shot { margin: 0; }
+.drr-credits__shot img {
+	width: 100%;
+	height: auto;
+	border-radius: 3px;
+	display: block;
+}
+
+/* ------------------------------------------------------------ Showreel --- */
+
+.drr-showreel {
+	margin: 0;
+	border-radius: 4px;
+	overflow: hidden;
+	background: #000;
+	max-width: 880px;
+}
+.drr-showreel video {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 9;
+}
+
+/* ---------------------------------------------------------------- IMDb --- */
+
+/* The credits call to action. Given real weight because the IMDb page is the
+   proof behind everything else on the site. */
+.drr-imdb {
+	display: inline-flex;
+	align-items: center;
+	gap: 1rem;
+	margin-top: 1.75rem;
+	padding: 0.9rem 1.4rem 0.9rem 1rem;
+	border: 1px solid var(--wp--preset--color--surface-raised);
+	border-radius: 4px;
+	background: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--contrast) !important;
+	text-decoration: none !important;
+	transition: border-color 0.15s ease, background 0.15s ease;
+}
+.drr-imdb:hover,
+.drr-imdb:focus-visible {
+	border-color: var(--wp--preset--color--accent);
+	background: var(--wp--preset--color--surface-raised);
+}
+
+.drr-imdb__mark {
+	flex: none;
+	padding: 0.35rem 0.6rem;
+	border-radius: 3px;
+	background: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--base);
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	line-height: 1;
+}
+
+.drr-imdb__text { display: flex; flex-direction: column; gap: 0.15rem; }
+.drr-imdb__text strong {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	line-height: 1.1;
+}
+.drr-imdb__text small {
+	font-size: 0.8125rem;
+	color: var(--wp--preset--color--muted);
+}
+.drr-imdb__arrow { flex: none; color: var(--wp--preset--color--accent); }
+
+/* Header IMDb chip. */
+.drr-header__imdb {
+	padding: 0.28rem 0.5rem;
+	border-radius: 3px;
+	background: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--base) !important;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.9375rem;
+	font-weight: 700;
+	line-height: 1;
+	text-decoration: none !important;
+}
+.drr-header__imdb:hover { background: var(--wp--preset--color--accent-bright); }
+
+@media (max-width: 1023px) {
+	.drr-header__imdb { display: none; }
+}
+
+/* --------------------------------------------------------- Memberships --- */
+
+/* A logo row rather than a grid. Two marks today; a flex row absorbs more
+   without the layout needing a rethink. */
+.drr-memberships {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1.25rem var(--wp--preset--spacing--40);
+}
+
+.drr-memberships__label {
+	margin: 0;
+	flex: none;
+}
+
+.drr-logos {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1.5rem var(--wp--preset--spacing--40);
+}
+
+.drr-logos img {
+	display: block;
+	height: 60px;
+	width: auto;
+	/* The marks are white on transparent, so they pick up the section ground.
+	   Held back slightly so they read as endorsement rather than as headings. */
+	opacity: 0.8;
+	transition: opacity 0.15s ease;
+}
+.drr-logos img:hover { opacity: 1; }
+
+@media (max-width: 600px) {
+	.drr-logos img { height: 46px; }
+}
+
+/* ------------------------------------------------------- Capabilities --- */
+
+/* A plain list of what the company does, in text rather than in images, so it
+   is readable by search engines and by anything summarising the page. */
+.drr-capabilities {
+	list-style: none;
+	margin: var(--wp--preset--spacing--30) 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+}
+
+.drr-capabilities li {
+	padding: 0.45rem 0.9rem;
+	border: 1px solid var(--wp--preset--color--surface-raised);
+	border-radius: 999px;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--contrast);
+	white-space: nowrap;
+}
